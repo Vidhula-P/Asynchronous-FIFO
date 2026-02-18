@@ -20,7 +20,7 @@ module asynchronous_fifo_tb;
   always #5 wr_clk = ~wr_clk;
   
   initial rd_clk = 0;
-  always #5 rd_clk = ~rd_clk; // read is slower
+  always #10 rd_clk = ~rd_clk; // read is slower
   
   initial begin
     $dumpfile("asynchronous_fifo.vcd");   // name of waveform file
@@ -38,17 +38,18 @@ module asynchronous_fifo_tb;
     if (!reset && !full) begin
       write_en <= 1;
       write_data <= write_data + 1;
-      counter <= counter + 1;
-      if (counter == 8'd10)
-        $finish;
     end
   end
   
   always @(posedge rd_clk) begin
     if (!reset) begin
       read_en <= 1;
-      if (!empty) 
+      if (!empty) begin
       	$strobe("Read- %0h", read_data);
+        counter <= counter + 1;
+        if (counter == 8'd10)
+          $finish;
+      end
       else
         $display("FIFO empty");
     end
