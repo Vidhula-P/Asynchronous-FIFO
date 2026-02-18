@@ -9,7 +9,6 @@ module asynchronous_fifo_tb;
   wire full, empty;
   
   int i; // loop variable
-  int counter;
   
   asynchronous_fifo #(DEPTH, WIDTH) f1 (wr_clk, rd_clk, reset, 
                            write_en, write_data,
@@ -26,12 +25,13 @@ module asynchronous_fifo_tb;
     $dumpfile("asynchronous_fifo.vcd");   // name of waveform file
     $dumpvars(0, asynchronous_fifo_tb);   // dump all signals in testbench hierarchy
     reset = 0;
-    counter = 0;
     write_en = 0;
     read_en = 0;
     write_data = 8'h00;
     #2 reset = 1;
-    #5 reset = 0;
+    #10 reset = 0;
+    repeat (20) @(posedge rd_clk);
+    $finish;
   end
   
   always @(posedge wr_clk) begin
@@ -46,9 +46,6 @@ module asynchronous_fifo_tb;
       read_en <= 1;
       if (!empty) begin
       	$strobe("Read- %0h", read_data);
-        counter <= counter + 1;
-        if (counter == 8'd10)
-          $finish;
       end
       else
         $display("FIFO empty");
