@@ -1,12 +1,15 @@
+// minimum depth ≈ 2 x clock ratio
+// Hence FIFO DEPTH > 4 
+
 module asynchronous_fifo_tb;
   
-  parameter DEPTH = 4;
+  parameter DEPTH = 8;
   parameter WIDTH = 8;
   
-  reg wr_clk, rd_clk, reset, write_en, read_en;
-  reg  [WIDTH-1:0] write_data; 
-  wire [WIDTH-1:0] read_data;
-  wire full, empty;
+  logic wr_clk, rd_clk, reset, write_en, read_en;
+  logic  [WIDTH-1:0] write_data; 
+  logic [WIDTH-1:0] read_data;
+  logic full, empty;
   
   int i; // loop variable
   
@@ -30,25 +33,24 @@ module asynchronous_fifo_tb;
     write_data = 8'h00;
     #2 reset = 1;
     #10 reset = 0;
-    repeat (20) @(posedge rd_clk);
+    repeat (30) @(posedge rd_clk);
     $finish;
   end
   
   always @(posedge wr_clk) begin
-    if (!reset && !full) begin
+    if (!reset && !full) begin //after reset deasserted and if FIFO not full
       write_en <= 1;
       write_data <= write_data + 1;
     end
   end
   
   always @(posedge rd_clk) begin
-    if (!reset) begin
-      read_en <= 1;
-      if (!empty) begin
-      	$strobe("Read- %0h", read_data);
-      end
-      else
-        $display("FIFO empty");
+    if (reset)
+      read_en <= 0;
+    else begin
+      read_en <= !empty;
+      if (read_en && !empty)
+        $display("Read- %0h", read_data);
     end
   end
   
