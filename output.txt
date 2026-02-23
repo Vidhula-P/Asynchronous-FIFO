@@ -1,4 +1,3 @@
-Read- x
 Read- 1
 Read- 2
 Read- 3
