@@ -26,4 +26,4 @@ Read- 19
 Read- 1a
 
 SPI monitor read coverage = 100.00
-SPI monitor write coverage = 100.00
+SPI monitor write coverage = 96.30

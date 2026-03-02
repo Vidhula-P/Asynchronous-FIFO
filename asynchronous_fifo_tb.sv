@@ -24,13 +24,14 @@ module asynchronous_fifo_tb;
   
   covergroup cg_wr @(posedge wr_clk);
     writing: coverpoint write_data {
-      bins valid_wr = {[8'h01:8'h1a]};
+      bins valid_wr[] = {[8'h01:8'h1a]};
+      bins transition = ( 8'h01 => 8'h02 => 8'h05 );
     }
   endgroup
   
   covergroup cg_rd @(posedge rd_clk);
   	reading: coverpoint read_data {
-      bins valid_wr = {[8'h01:8'h1a]};
+      bins valid_wr[] = {[8'h01:8'h1a]};
     }
   endgroup
 
