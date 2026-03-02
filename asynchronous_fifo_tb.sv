@@ -22,6 +22,21 @@ module asynchronous_fifo_tb;
                            read_en, read_data,
                            full, empty);
   
+  covergroup cg_wr @(posedge wr_clk);
+    writing: coverpoint write_data {
+      bins valid_wr = {[8'h01:8'h1a]};
+    }
+  endgroup
+  
+  covergroup cg_rd @(posedge rd_clk);
+  	reading: coverpoint read_data {
+      bins valid_wr = {[8'h01:8'h1a]};
+    }
+  endgroup
+
+  cg_wr cg_wr_inst = new();
+  cg_rd cg_rd_inst = new();
+  
   initial wr_clk = 0;
   always #5 wr_clk = ~wr_clk;
   
@@ -35,6 +50,10 @@ module asynchronous_fifo_tb;
     #2 reset = 1;
     #10 reset = 0;
     repeat (30) @(posedge rd_clk);
+    $display("SPI monitor read coverage = %0.2f",
+             cg_rd_inst.get_inst_coverage());
+    $display("SPI monitor write coverage = %0.2f",
+             cg_wr_inst.get_inst_coverage());
     $finish;
   end
   
